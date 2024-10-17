@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiController;
 
-Route::post('/register', [ApiController::class, 'register']);
-Route::post('/login', [ApiController::class, 'login']);
+Route::post('/register', [ApiController::class, 'register'])->middleware('throttle:10,1');
+Route::post('/login', [ApiController::class, 'login'])->middleware('throttle:10,1');
 
 // Protected routes
 Route::group([
