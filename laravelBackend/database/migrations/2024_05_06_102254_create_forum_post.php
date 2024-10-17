@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('forum_posts', function (Blueprint $table) {
             $table->id();
-            $table->string('nosaukums', 50);
-            $table->text('saturs'); // Changed from string to text for longer content
-            $table->unsignedBigInteger('author_id'); // Ensure this line is present
+            $table->string('nosaukums'); // Changed 'title' to 'nosaukums'
+            $table->text('saturs');      // Changed 'content' to 'saturs' for longer content
+            $table->unsignedBigInteger('author_id')->nullable();
             $table->date('date');
             $table->timestamps();
 

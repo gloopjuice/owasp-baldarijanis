@@ -12,12 +12,7 @@ use App\Http\Controllers\Controller;
 
 class ApiController extends Controller
 {
-    /**
-     * Register a new user.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function register(Request $request)
     {
         // Validate the request input
@@ -48,15 +43,9 @@ class ApiController extends Controller
         ], 201);
     }
 
-    /**
-     * Log in a user.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+ 
     public function login(Request $request)
     {
-        // Validate the request input
         $credentials = $request->only('email', 'password');
 
         if (auth()->attempt($credentials)) {
@@ -67,32 +56,20 @@ class ApiController extends Controller
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    /**
-     * Get the authenticated user's profile.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+  
     public function profile()
     {
         return response()->json(auth()->user(), 200);
     }
 
-    /**
-     * Log out a user.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+ 
     public function logout()
     {
         auth()->logout();
         return response()->json(['message' => 'Successfully logged out'], 200);
     }
 
-    /**
-     * Delete a user.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function deleteUser()
     {
         $user = auth()->user();
@@ -101,22 +78,12 @@ class ApiController extends Controller
         return response()->json(['message' => 'User deleted successfully'], 200);
     }
 
-    /**
-     * Get the user's profile.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function getUserProfile()
     {
         return response()->json(auth()->user(), 200);
     }
 
-    /**
-     * Update the user's profile.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function updateProfile(Request $request)
     {
         $user = auth()->user();
@@ -137,11 +104,7 @@ class ApiController extends Controller
         return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
     }
 
-    /**
-     * Delete user profile.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+ 
     public function deleteProfile()
     {
         $user = auth()->user();
@@ -150,38 +113,27 @@ class ApiController extends Controller
         return response()->json(['message' => 'Profile deleted successfully'], 200);
     }
 
-    /**
-     * Create a forum post.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function createForumPost(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'nosaukums' => 'required|string|max:255', // Changed 'title' to 'nosaukums'
+            'saturs' => 'required|string',             // Changed 'content' to 'saturs'
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
         $post = ForumPost::create([
-            'user_id' => auth()->id(),
-            'title' => $request->title,
-            'content' => $request->content,
+            'nosaukums' => $request->input('nosaukums'),
+            'saturs' => $request->input('saturs'),
+            'date' => now(),
+            'author_id' => auth()->id(), // Assuming you're using authentication and want the current user's ID
         ]);
-
+    
         return response()->json(['message' => 'Post created successfully!', 'post' => $post], 201);
     }
-
-    /**
-     * Get a specific forum post.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+    
     public function show($id)
     {
         $post = ForumPost::find($id);
@@ -190,69 +142,45 @@ class ApiController extends Controller
         }
         return response()->json($post, 200);
     }
-
-    /**
-     * Get all forum posts.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    
     public function getAllForumPosts()
     {
         $posts = ForumPost::all();
         return response()->json($posts, 200);
     }
-
-    /**
-     * Edit a forum post.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+    
     public function editForumPost(Request $request, $id)
     {
         $post = ForumPost::find($id);
         if (!$post) {
             return response()->json(['error' => 'Post not found'], 404);
         }
-
+    
         $validator = Validator::make($request->all(), [
-            'title' => 'sometimes|string|max:255',
-            'content' => 'sometimes|string',
+            'nosaukums' => 'sometimes|string|max:255', // Changed 'title' to 'nosaukums'
+            'saturs' => 'sometimes|string',             // Changed 'content' to 'saturs'
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        $post->update($request->only('title', 'content'));
-
+    
+        $post->update($request->only('nosaukums', 'saturs')); // Changed 'title' to 'nosaukums' and 'content' to 'saturs'
+    
         return response()->json(['message' => 'Post updated successfully!', 'post' => $post], 200);
     }
-
-    /**
-     * Delete a forum post.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+    
     public function deletePost($id)
     {
         $post = ForumPost::find($id);
         if (!$post) {
             return response()->json(['error' => 'Post not found'], 404);
         }
-
+    
         $post->delete();
         return response()->json(['message' => 'Post deleted successfully'], 200);
     }
-
-    /**
-     * Upload a file.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+    
     public function uploadFile(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -268,12 +196,7 @@ class ApiController extends Controller
         return response()->json(['message' => 'File uploaded successfully!', 'file_path' => $filePath], 201);
     }
 
-    /**
-     * Delete a file.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function deleteFile(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -292,24 +215,14 @@ class ApiController extends Controller
         return response()->json(['error' => 'File not found'], 404);
     }
 
-    /**
-     * Get all users.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function getAllUsers()
     {
         $users = User::all();
         return response()->json($users, 200);
     }
 
-    /**
-     * Edit user profile.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function editUserProfile(Request $request, $id)
     {
         $user = User::find($id);
@@ -333,12 +246,6 @@ class ApiController extends Controller
         return response()->json(['message' => 'User profile updated successfully', 'user' => $user], 200);
     }
 
-    /**
-     * Delete a user profile.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function deleteUserProfile($id)
     {
         $user = User::find($id);
@@ -349,52 +256,36 @@ class ApiController extends Controller
         $user->delete();
         return response()->json(['message' => 'User profile deleted successfully'], 200);
     }
-
-    /**
-     * Create a comment.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function createComment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'post_id' => 'required|exists:forum_posts,id', // Assuming comments are linked to forum posts
-            'content' => 'required|string',
+            'post_id' => 'required|exists:forum_posts,id', // Validate that the post exists
+            'content' => 'required|string|max:1000', // Validate content with max length
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
+        // Create the comment and ensure to include the author_id
         $comment = Comment::create([
-            'user_id' => auth()->id(),
             'post_id' => $request->post_id,
+            'author_id' => auth()->id(), // Use the authenticated user's ID for author_id
             'content' => $request->content,
         ]);
-
+    
         return response()->json(['message' => 'Comment created successfully!', 'comment' => $comment], 201);
     }
+    
+    
 
-    /**
-     * Get comments for a specific forum post.
-     *
-     * @param int $postId
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function getComments($postId)
     {
         $comments = Comment::where('post_id', $postId)->get();
         return response()->json($comments, 200);
     }
 
-    /**
-     * Update a comment.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function updateComment(Request $request, $id)
     {
         $comment = Comment::find($id);
@@ -415,12 +306,7 @@ class ApiController extends Controller
         return response()->json(['message' => 'Comment updated successfully!', 'comment' => $comment], 200);
     }
 
-    /**
-     * Delete a comment.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+ 
     public function deleteComment($id)
     {
         $comment = Comment::find($id);
