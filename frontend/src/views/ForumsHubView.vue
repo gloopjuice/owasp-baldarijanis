@@ -84,18 +84,18 @@ export default {
       }
     },
     async fetchProfile() {
-  try {
-    const response = await axios.get('/api/getUserProfile', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`
+      try {
+        const response = await axios.get('/api/getUserProfile', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+        return response.data.userData;
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        return null;
       }
-    });
-    return response.data.userData;
-  } catch (error) {
-    console.error('Error fetching profile:', error.response ? error.response.data : error.message);
-    return null;
-  }
-},
+    },
     async navigateToPost(postId) {
       this.$router.push({ name: 'PostDetails', params: { postId } });
     },
@@ -122,7 +122,7 @@ export default {
             alert('Error creating post');
           }
         } else {
-          alert('Error ar profile data');
+          alert('Error fetching profile data');
         }
       } catch (error) {
         console.error('Error creating post:', error);
@@ -134,10 +134,8 @@ export default {
     this.getForumPosts();
   }
 };
-</script>
-
-<style scoped>
-
+</script><style scoped>
+/* Existing CSS */
 .forum-container {
   margin-top: 10vh;
 }
