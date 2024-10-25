@@ -8,7 +8,14 @@ export default defineConfig({
     build: {
       sourcemap: true
     },
-  
+    server: {
+      port: 5173,
+      cors: {
+        origin: 'http://localhost:5173',
+        methods: ['GET', 'POST'],
+        credentials: true,
+      }, 
+    },
   plugins: [
     vue(),
   ],
