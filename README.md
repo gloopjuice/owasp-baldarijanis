@@ -37,6 +37,8 @@ backenda setups
     
     php artisan passport:client --personal
 
+composer require laravel/breeze --devphp artisan breeze:install
+
 env faila config:
 ```
 DB_CONNECTION=mysql
